@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
@@ -10,6 +11,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.api.ApiException
@@ -30,12 +32,20 @@ import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 import java.util.*
 
-class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
+class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnPoiClickListener, GoogleMap.OnMapLongClickListener {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
     private lateinit var map: GoogleMap
+    private lateinit var selectedLatLong: LatLng
+    private lateinit var selectedPointOfInterest: PointOfInterest
+    private val TAG = SelectLocationFragment::class.java.simpleName
+
+
+    companion object {
+        private val REQUEST_LOCATION_PERMISSION = 1000
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -107,29 +117,102 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
 
-        setMapLongClick(map)
+        map.setOnMapLongClickListener(this)
+        map.setOnPoiClickListener(this)
+        map.setMapStyle()
+        enableMyLocation()
     }
 
-    private fun setMapLongClick(map: GoogleMap) {
-        map.clear()
-        map.setOnMapLongClickListener {  latLng ->
-            val snippet = String.format(
-                Locale.getDefault(),
-                "Lat: %1$.5f, Long: %2$.5f",
-                latLng.latitude,
-                latLng.longitude
-            )
 
-            val marker = map.addMarker(
-                MarkerOptions()
-                    .position(latLng)
-                    .title(getString(R.string.dropped_pin))
-                    .snippet(snippet)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+
+    override fun onPoiClick(poi: PointOfInterest) {
+        map.clear() // clearing any other places they might have selected before
+        selectedPointOfInterest = poi
+        selectedLatLong = poi.latLng
+        val poiMarker = map.addMarker(MarkerOptions()
+            .position(poi.latLng)
+            .title(poi.name)
+        )
+        poiMarker.showInfoWindow()
+    }
+
+    override fun onMapLongClick(latLng: LatLng) {
+        map.clear()
+
+        selectedLatLong = latLng
+
+        val snippet = String.format(
+            Locale.getDefault(),
+            "Lat: %1$.5f, Long: %2$.5f",
+            latLng.latitude,
+            latLng.longitude
+        )
+
+        selectedPointOfInterest = PointOfInterest(selectedLatLong, "poiId", snippet)
+
+        val marker = map.addMarker(
+            MarkerOptions()
+                .position(latLng)
+                .title(snippet)
+//                .snippet(snippet)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        )
+        marker.showInfoWindow()
+
+    }
+
+    private fun GoogleMap.setMapStyle() {
+        try {
+            // Customize the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = this.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            context,
+                            R.raw.map_style
+                    )
             )
-            marker.showInfoWindow()
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", e)
         }
     }
 
+    override fun onPause() {
+//        _viewModel.reminderSelectedLocationStr.value =  selectedPointOfInterest.name
+//        _viewModel.selectedPOI.value = selectedPointOfInterest
+//        _viewModel.latitude.value = selectedPointOfInterest.latLng.latitude
+//        _viewModel.longitude.value = selectedPointOfInterest.latLng.longitude
+        super.onPause()
+    }
 
+
+    private fun isPermissionGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                        requireActivity(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
+            map.isMyLocationEnabled = true
+        }
+        else {
+            ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                enableMyLocation()
+            }
+        }
+    }
 }
