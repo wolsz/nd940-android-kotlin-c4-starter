@@ -77,6 +77,8 @@ class SaveReminderFragment : BaseFragment() {
             // Package the data into a ReminderDataItem for validation, geofencing and saving to the
             // database
 
+//            _viewModel.showLoading.value = true
+
             val reminderDataItem = ReminderDataItem(
                 title,
                 description,
@@ -89,7 +91,9 @@ class SaveReminderFragment : BaseFragment() {
 
             if (isaValidReminder) {
                 _viewModel.showErrorMessage.value = "Ready to geofence and save"
+
                 geoFenceAndSaveData(reminderDataItem)
+
 
             }
 
@@ -105,8 +109,10 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun addTheGeofence(reminderDataItem: ReminderDataItem) {
         _viewModel.saveReminder(reminderDataItem)
+        _viewModel.showToast.postValue("We have saved the Geofence")
 //        val geofence = Geofence.Builder()
 //            .setRequestId()
+
     }
 
     override fun onDestroy() {

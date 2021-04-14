@@ -10,6 +10,7 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSource) :
@@ -50,7 +51,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
      * Save the reminder to the data source
      */
     fun saveReminder(reminderData: ReminderDataItem) {
-        showLoading.value = true
+
+        showLoading.postValue(true)
         viewModelScope.launch {
             dataSource.saveReminder(
                 ReminderDTO(
@@ -62,7 +64,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
                     reminderData.id
                 )
             )
-            showLoading.value = false
+
+            showLoading.postValue(false)
             showToast.value = app.getString(R.string.reminder_saved)
             navigationCommand.value = NavigationCommand.Back
         }
