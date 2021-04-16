@@ -35,9 +35,9 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var geofencingClient: GeofencingClient
 
     private val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(requireContext(), GeofenceBroadcastReceiver::class.java)
+        val intent = Intent(requireActivity(), GeofenceBroadcastReceiver::class.java)
         intent.action = ACTION_GEOFENCE_EVENT
-        PendingIntent.getBroadcast(requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(requireActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
 
@@ -69,19 +69,23 @@ class SaveReminderFragment : BaseFragment() {
             .addGeofence(geofence)
             .build()
 
+        Log.i("TEST", "added geofences" + remindData.latitude + " " + remindData.longitude)
+
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
             addOnSuccessListener {
-                Toast.makeText(
-                    context, R.string.geofences_added,
-                    Toast.LENGTH_SHORT
-                ).show()
+                Log.i("TEST", "added geofences" + remindData.latitude + " " + remindData.longitude)
+//                Toast.makeText(
+//                    context, R.string.geofences_added,
+//                    Toast.LENGTH_SHORT
+//                ).show()
 
             }
             addOnFailureListener {
-                Toast.makeText(
-                    context, R.string.geofences_not_added,
-                    Toast.LENGTH_SHORT
-                ).show()
+                Log.i("TEST", "failed geofences")
+//                Toast.makeText(
+//                    context, R.string.geofences_not_added,
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }
@@ -97,7 +101,7 @@ class SaveReminderFragment : BaseFragment() {
 
         binding.viewModel = _viewModel
 
-        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
+//        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
 
         return binding.root
     }
@@ -105,6 +109,9 @@ class SaveReminderFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
+
+        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
+
         binding.selectLocation.setOnClickListener {
             //            Navigate to another fragment to get the user location
             val locationManager = requireActivity().getSystemService(LOCATION_SERVICE) as LocationManager
