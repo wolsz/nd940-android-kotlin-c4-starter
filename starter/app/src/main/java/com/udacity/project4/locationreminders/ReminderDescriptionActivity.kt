@@ -34,8 +34,11 @@ class ReminderDescriptionActivity : AppCompatActivity() {
             R.layout.activity_reminder_description
         )
 
+        binding.dismissButton.setOnClickListener {
+            finish()
+        }
 
-        val getData = savedInstanceState?.getSerializable(EXTRA_ReminderDataItem) as ReminderDataItem
+        val getData = intent.extras?.getSerializable(EXTRA_ReminderDataItem) as ReminderDataItem
         binding.reminderDataItem = getData
 
     }

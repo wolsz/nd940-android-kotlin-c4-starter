@@ -146,15 +146,15 @@ class SaveReminderFragment : BaseFragment() {
                 longitude
             )
 
-            val isaValidReminder = _viewModel.validateEnteredData(reminderDataItem)
+            val isaValidReminder = _viewModel.validateAndSaveReminder(reminderDataItem)
 
-            if (isaValidReminder) {
-                _viewModel.showErrorMessage.value = "Ready to geofence and save"
-
-                geoFenceAndSaveData(reminderDataItem)
-
-
-            }
+//            if (isaValidReminder) {
+//                _viewModel.showErrorMessage.value = "Ready to geofence and save"
+//
+//                geoFenceAndSaveData(reminderDataItem)
+//
+//
+//            }
 
 //            TODO: use the user entered reminder details to:
 //             1) add a geofencing request
@@ -162,17 +162,17 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
-    private fun geoFenceAndSaveData(reminderDataItem: ReminderDataItem) {
-        addTheGeofence(reminderDataItem)
-    }
-
-    private fun addTheGeofence(reminderDataItem: ReminderDataItem) {
-        _viewModel.saveReminder(reminderDataItem)
-        _viewModel.showToast.postValue("We have saved the Geofence")
-//        val geofence = Geofence.Builder()
-//            .setRequestId()
-
-    }
+//    private fun geoFenceAndSaveData(reminderDataItem: ReminderDataItem) {
+//        addTheGeofence(reminderDataItem)
+//    }
+//
+//    private fun addTheGeofence(reminderDataItem: ReminderDataItem) {
+//        _viewModel.saveReminder(reminderDataItem)
+//        _viewModel.showToast.postValue("We have saved the Geofence")
+////        val geofence = Geofence.Builder()
+////            .setRequestId()
+//
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

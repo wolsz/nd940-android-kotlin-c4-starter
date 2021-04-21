@@ -17,7 +17,6 @@
         android:orientation="vertical"
         android:padding="16dp"
         tools:context=".locationreminders.ReminderDescriptionActivity">
-        <!--TODO: add the design of the reminder details-->
 
         <TextView
             android:layout_width="match_parent"
@@ -133,6 +132,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@{reminderDataItem.longitude.toString()}" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/dismiss_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:gravity="center"
+                android:text="Dismiss" />
         </LinearLayout>
 
     </LinearLayout>
