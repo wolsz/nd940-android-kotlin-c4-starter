@@ -81,12 +81,11 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             }
 
             if (resultId == reminderData.id) {
-                showToast.value ="Saved and found it"
+                showToast.value =app.resources.getString(R.string.reminder_saved)
                 doGeofencing.value = reminderData
             }
 
             showLoading.value = false
-//            showToast.value = app.getString(R.string.reminder_saved)
             navigationCommand.value = NavigationCommand.Back
         }
     }
