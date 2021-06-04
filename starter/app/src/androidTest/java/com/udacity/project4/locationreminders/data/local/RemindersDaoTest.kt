@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +25,38 @@ import org.junit.Test
 //Unit test the DAO
 @SmallTest
 class RemindersDaoTest {
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
+    private lateinit var database: RemindersDatabase
+
+    @Before
+    fun initDb() {
+        database = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            RemindersDatabase::class.java
+        ).build()
+    }
+
+    @After
+    fun closeDb() = database.close()
+
+
+    @Test
+    fun insertReminderAndGetById() = runBlockingTest {
+        // GIVEN - insert a reminder
+        val reminder = ReminderDTO("The title", "The description", "location", 0.0, 0.0)
+        database.reminderDao().saveReminder(reminder)
+
+        // WHEN - Get the reminder by id
+        val loaded = database.reminderDao().getReminderById(reminder.id)
+
+        //THEN - compare the loaded with the retrieved
+        assertThat<ReminderDTO>(loaded as ReminderDTO, notNullValue())
+        assertThat(loaded.id, `is`(reminder.id))
+        assertThat(loaded.title, `is`(reminder.title))
+        assertThat(loaded.description, `is`(reminder.description))
+    }
 
 //    TODO: Add testing implementation to the RemindersDao.kt
 
