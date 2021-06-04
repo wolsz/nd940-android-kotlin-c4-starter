@@ -56,6 +56,9 @@ class RemindersDaoTest {
         assertThat(loaded.id, `is`(reminder.id))
         assertThat(loaded.title, `is`(reminder.title))
         assertThat(loaded.description, `is`(reminder.description))
+        assertThat(loaded.location, `is`(reminder.location))
+        assertThat(loaded.latitude, `is`(reminder.latitude))
+        assertThat(loaded.longitude, `is`(reminder.longitude))
     }
 
 //    TODO: Add testing implementation to the RemindersDao.kt
