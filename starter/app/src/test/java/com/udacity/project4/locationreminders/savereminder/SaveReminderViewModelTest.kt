@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.MainCoroutineRule
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.FakeDataSource
@@ -36,6 +37,10 @@ class SaveReminderViewModelTest {
     // Executes each task synchronously using Architecture Components.
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+
 
     private lateinit var saveReminderViewModel: SaveReminderViewModel
     private val appContext: Application = ApplicationProvider.getApplicationContext()
@@ -105,6 +110,18 @@ class SaveReminderViewModelTest {
         val result: String? = saveReminderViewModel.showToast.value
 
         assertThat(result, `is`(appContext.resources.getString(R.string.reminder_saved)))
+    }
+
+    @Test
+    fun saveReminders_loading() {
+        val reminderDataItem = ReminderDataItem("", "", "location", 0.0, 0.0)
+        mainCoroutineRule.pauseDispatcher()
+        saveReminderViewModel.saveReminder(reminderDataItem)
+
+        assertThat(saveReminderViewModel.showLoading.getOrAwaitValue(), `is`(true))
+        mainCoroutineRule.resumeDispatcher()
+
+        assertThat(saveReminderViewModel.showLoading.getOrAwaitValue(), `is`(false))
     }
 
     

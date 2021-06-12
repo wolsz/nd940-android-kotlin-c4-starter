@@ -34,11 +34,12 @@ class RemindersListViewModelTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var remindersListViewModel: RemindersListViewModel
+    private val reminderDataSource = FakeDataSource()
     private val appContext: Application = ApplicationProvider.getApplicationContext()
 
     @Before
     fun  setupTheViewModel() {
-        val reminderDataSource = FakeDataSource()
+//        val reminderDataSource = FakeDataSource()
         remindersListViewModel = RemindersListViewModel(appContext, reminderDataSource)
     }
 
@@ -54,6 +55,15 @@ class RemindersListViewModelTest {
         mainCoroutineRule.resumeDispatcher()
 
         assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
+    }
+
+    @Test
+    fun loadRemindersWhenNoRemindersAreAvailable_callErrorToDisplay() {
+        reminderDataSource.setReturnError(true)
+
+        remindersListViewModel.loadReminders()
+        assertThat(remindersListViewModel.showSnackBar.getOrAwaitValue(), `is`("Test exception"))
+//        assertThat(remindersListViewModel.showSnackBar.getOrAwaitValue())
     }
 
 }
