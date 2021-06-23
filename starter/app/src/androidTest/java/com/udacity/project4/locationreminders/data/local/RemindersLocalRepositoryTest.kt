@@ -28,7 +28,6 @@ import java.util.*
 @MediumTest
 class RemindersLocalRepositoryTest {
 
-    //    TODO: Add testing implementation to the RemindersLocalRepository.kt
     private lateinit var localDataSource: RemindersLocalRepository
     private lateinit var database: RemindersDatabase
 

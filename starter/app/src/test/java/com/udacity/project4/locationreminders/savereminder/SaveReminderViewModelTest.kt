@@ -32,7 +32,6 @@ import org.robolectric.annotation.Config
 class SaveReminderViewModelTest {
 
 
-    //TODO: provide testing to the SaveReminderView and its live data objects
 
     // Executes each task synchronously using Architecture Components.
     @get:Rule

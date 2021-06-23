@@ -93,7 +93,6 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
 
 
-    //    TODO: test the navigation of the fragments.
     @Test
     fun onFAB_whenClicked_navigateToSaveReminderFrag() = runBlockingTest {
         //Given

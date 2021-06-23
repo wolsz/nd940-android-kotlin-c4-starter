@@ -25,8 +25,6 @@ import org.robolectric.annotation.Config
 
 class RemindersListViewModelTest {
 
-    //TODO: provide testing to the RemindersListViewModel and its live data objects
-    // Executes each task synchronously using Architecture Components.
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

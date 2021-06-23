@@ -3,8 +3,8 @@ package com.udacity.project4.locationreminders.data.local
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.SmallTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SmallTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 
@@ -60,7 +60,5 @@ class RemindersDaoTest {
         assertThat(loaded.latitude, `is`(reminder.latitude))
         assertThat(loaded.longitude, `is`(reminder.longitude))
     }
-
-//    TODO: Add testing implementation to the RemindersDao.kt
 
 }
