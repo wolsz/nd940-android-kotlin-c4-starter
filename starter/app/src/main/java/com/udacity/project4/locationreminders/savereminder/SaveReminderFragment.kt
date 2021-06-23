@@ -52,7 +52,6 @@ class SaveReminderFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun doingGeofencingNow(remindData: ReminderDataItem) {
-        Toast.makeText(context, "I am doing the geofencing now: $remindData", Toast.LENGTH_SHORT).show()
 
         val geofence = Geofence.Builder()
             .setRequestId(remindData.id)
@@ -74,18 +73,11 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
             addOnSuccessListener {
                 Log.i("TEST", "added geofences" + remindData.latitude + " " + remindData.longitude)
-//                Toast.makeText(
-//                    context, R.string.geofences_added,
-//                    Toast.LENGTH_SHORT
-//                ).show()
 
             }
             addOnFailureListener {
                 Log.i("TEST", "failed geofences")
-//                Toast.makeText(
-//                    context, R.string.geofences_not_added,
-//                    Toast.LENGTH_SHORT
-//                ).show()
+
             }
         }
     }
@@ -101,8 +93,6 @@ class SaveReminderFragment : BaseFragment() {
 
         binding.viewModel = _viewModel
 
-//        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
-
         return binding.root
     }
 
@@ -117,10 +107,8 @@ class SaveReminderFragment : BaseFragment() {
             val locationManager = requireActivity().getSystemService(LOCATION_SERVICE) as LocationManager
 
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//                Toast.makeText(context, "GPS is Enabled on your device", Toast.LENGTH_SHORT).show()
                 goToLocationSelection()
             } else {
-//                Toast.makeText(context, "GPS is not Enabled on your device", Toast.LENGTH_SHORT).show()
                 checkDeviceLocationSettingsAndSave()
             }
 
@@ -133,10 +121,6 @@ class SaveReminderFragment : BaseFragment() {
             val latitude = _viewModel.latitude.value
             val longitude = _viewModel.longitude.value
 
-            // Package the data into a ReminderDataItem for validation, geofencing and saving to the
-            // database
-
-//            _viewModel.showLoading.value = true
 
             val reminderDataItem = ReminderDataItem(
                 title,
@@ -148,31 +132,9 @@ class SaveReminderFragment : BaseFragment() {
 
             val isaValidReminder = _viewModel.validateAndSaveReminder(reminderDataItem)
 
-//            if (isaValidReminder) {
-//                _viewModel.showErrorMessage.value = "Ready to geofence and save"
-//
-//                geoFenceAndSaveData(reminderDataItem)
-//
-//
-//            }
-
-//            TODO: use the user entered reminder details to:
-//             1) add a geofencing request
-//             2) save the reminder to the local db
         }
     }
 
-//    private fun geoFenceAndSaveData(reminderDataItem: ReminderDataItem) {
-//        addTheGeofence(reminderDataItem)
-//    }
-//
-//    private fun addTheGeofence(reminderDataItem: ReminderDataItem) {
-//        _viewModel.saveReminder(reminderDataItem)
-//        _viewModel.showToast.postValue("We have saved the Geofence")
-////        val geofence = Geofence.Builder()
-////            .setRequestId()
-//
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

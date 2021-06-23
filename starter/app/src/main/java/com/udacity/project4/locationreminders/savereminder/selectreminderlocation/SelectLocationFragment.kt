@@ -132,7 +132,7 @@ class SelectLocationFragment : BaseFragment(), GoogleMap.OnPoiClickListener, Goo
         map.setOnPoiClickListener(this)
         map.setMapStyle()
         setMap()
-        _viewModel.showSnackBar.value = "Please select a POI"
+//        _viewModel.showSnackBar.value = "Please select a POI"
 
     }
 
