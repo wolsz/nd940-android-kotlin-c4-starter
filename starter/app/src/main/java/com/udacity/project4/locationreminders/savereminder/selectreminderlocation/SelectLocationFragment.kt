@@ -11,12 +11,12 @@ import android.content.res.Resources
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.api.ResolvableApiException
@@ -140,6 +140,7 @@ class SelectLocationFragment : BaseFragment(), GoogleMap.OnPoiClickListener,
         map.setOnPoiClickListener(this)
         map.setMapStyle()
 
+//        checkLocationPermissions()
         enableMyLocation()
 //        setMap()
 //        _viewModel.showSnackBar.value = "Please select a POI"
@@ -243,6 +244,8 @@ class SelectLocationFragment : BaseFragment(), GoogleMap.OnPoiClickListener,
     private fun enableMyLocation() {
         if (isForegroundPermissionGranted()) {
             enableMap()
+            checkLocationPermissions()
+
         } else {
             requestForegroundPermissions()
         }
@@ -253,17 +256,47 @@ class SelectLocationFragment : BaseFragment(), GoogleMap.OnPoiClickListener,
     }
 
     private fun isForegroundPermissionGranted(): Boolean {
-        val granted = checkSelfPermission(
-            requireActivity().applicationContext,
-            Manifest.permission.ACCESS_FINE_LOCATION) ==PackageManager.PERMISSION_GRANTED
-         Log.d(TAG, "Permission granted $granted")
-        return granted
+
+        return checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun isBackgroundPermissionGranted(): Boolean {
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            PackageManager.PERMISSION_GRANTED ==
+                    checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    )
+        } else {
+            true
+        }
     }
 
     private fun requestForegroundPermissions() {
         requestPermissions(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             REQUEST_FOREGROUND_PERMISSION_RESULT_CODE)
+    }
+
+    private fun requestBackgroundPermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                REQUEST_BACKGROUND_PERMISSIONS_REQUEST_CODE
+            )
+        }
+    }
+
+    fun checkLocationPermissions() {
+        if (!isForegroundPermissionGranted()) {
+            requestForegroundPermissions()
+        } else if (!isBackgroundPermissionGranted()) {
+            requestBackgroundPermissions()
+        } else {
+            // All required permissions are granted. Do the action you want.
+        }
     }
 
 //    override fun onRequestPermissionsResult(
@@ -307,15 +340,30 @@ class SelectLocationFragment : BaseFragment(), GoogleMap.OnPoiClickListener,
 
         when (requestCode) {
             REQUEST_FOREGROUND_PERMISSION_RESULT_CODE -> {
-                Log.d(TAG, "onRequestPermissionsResult: ------  $requestCode ${grantResults[0]}-----------")
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "onRequestPermissionsResult: ------  $requestCode no no -----------")
                     enableMap()
+                    checkLocationPermissions()
+                } else {
+                    Snackbar.make(
+                        requireView(),
+                        R.string.permission_denied_explanation,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+//                        .setAction(R.string.settings) {
+//                            startActivity(Intent().apply {
+//                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                                data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+//                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                            })
+//                        }.show()
                 }
             }
 
             REQUEST_BACKGROUND_PERMISSIONS_REQUEST_CODE-> {
-
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkLocationPermissions()
+                }
             }
 
         }
