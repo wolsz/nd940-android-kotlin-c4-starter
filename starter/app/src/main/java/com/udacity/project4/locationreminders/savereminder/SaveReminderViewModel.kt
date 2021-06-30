@@ -11,8 +11,6 @@ import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
-import com.udacity.project4.utils.SingleLiveEvent
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSource) :
@@ -26,7 +24,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val isSelected = MutableLiveData<Boolean>()
 
     val isGeoFencingReady = MutableLiveData<Boolean>()
-    val doGeofencing: SingleLiveEvent<ReminderDataItem> = SingleLiveEvent()
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -82,7 +79,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
 
             if (resultId == reminderData.id) {
                 showToast.value =app.resources.getString(R.string.reminder_saved)
-                doGeofencing.value = reminderData
             }
 
             showLoading.value = false
